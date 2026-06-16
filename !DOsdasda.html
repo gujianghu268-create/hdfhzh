@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人主頁 | 數據科學與數學建模</title>
+    <style>
+        /* 全局變量定義：科技感配色 */
+        :root {
+            --bg-main: #0a192f;
+            --bg-card: rgba(23, 42, 69, 0.7);
+            --text-primary: #e6f1ff;
+            --text-secondary: #8892b0;
+            --accent: #64ffda;
+            --accent-glow: rgba(100, 255, 218, 0.15);
+            --border-line: rgba(100, 255, 218, 0.1);
+        }
+
+        /* 全局樣式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Fira Code', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* 高級毛玻璃導航欄 */
+        header {
+            background: rgba(10, 25, 47, 0.85);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(100, 255, 218, 0.05);
+            transition: all 0.3s;
+        }
+
+        .nav-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+            font-family: monospace;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        /* 導航線條動畫 */
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* 霓虹語言切換按鈕 */
+        .lang-btn {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: monospace;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            background: var(--accent-glow);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* 歡迎區塊 (Hero Section) */
+        .hero {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            margin-top: 60px;
+            background: radial-gradient(circle at center, rgba(23, 42, 69, 0.6) 0%, var(--bg-main) 70%);
+        }
+
+        /* 動態打字機外觀 */
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            font-weight: 400;
+        }
+
+        /* 通用區塊樣式 */
+        .section {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 50px;
+            color: var(--text-primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* 標題前綴裝飾（代碼風格） */
+        .section-title::before {
+            content: '//';
+            color: var(--accent);
+            font-family: monospace;
+        }
+
+        /* 關於我與技能 */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .hero h1 { font-size: 2.2rem; }
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            text-align: justify;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #172a45;
+            color: var(--accent);
+            border: 1px solid var(--border-line);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            transition: all 0.2s;
+        }
+        .tag:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* 數學建模項目列表 */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 45px;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 40px;
+            border: 1px solid var(--border-line);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        /* 懸停發光與浮起特效 */
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(100, 255, 218, 0.4);
+            box-shadow: 0 20px 40px -15px rgba(2, 12, 27, 0.7), 0 0 20px var(--accent-glow);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(136, 146, 176, 0.1);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 576px) {
+            .project-header { flex-direction: column; gap: 15px; }
+        }
+
+        .project-title {
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .project-card:hover .project-title {
+            color: var(--accent);
+        }
+
+        .project-badge {
+            font-size: 0.75rem;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: monospace;
+            white-space: nowrap;
+            background: var(--accent-glow);
+        }
+
+        .project-segment {
+            margin-bottom: 20px;
+        }
+
+        .segment-title {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-family: monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .segment-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            text-align: justify;
+        }
+
+        /* 高亮代碼標籤 */
+        .tech-inline {
+            background: #0a192f;
+            color: var(--text-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        /* 簡潔大氣頁尾 */
+        footer {
+            background: #020c1b;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            border-top: 1px solid rgba(100, 255, 218, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo" id="nav-logo">PORTFOLIO >_</div>
+            <div class="nav-right">
+                <nav>
+                    <a href="#about" id="nav-about">關於我</a>
+                    <a href="#projects" id="nav-projects">建模成果</a>
+                </nav>
+                <button class="lang-btn" id="lang-toggle" onclick="toggleLanguage()">English</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 id="hero-title">用數理模型解構複雜世界</h1>
+        <p id="hero-desc">專注於統計實證分析、金融量化技術指標研究與時空網絡優化。堅持數據驅動，利用代碼與算法交付洞察。</p>
+    </section>
+
+    <section id="about" class="section">
+        <h2 class="section-title" id="title-about">關於我</h2>
+        <div class="about-grid">
+            <div class="about-text">
+                <p id="about-p1">你好！我是一名專注於數據科學與數學建模的實踐者。我擅長將現實世界中複雜、模糊的問題，通過嚴謹的數學語言進行抽象，並利用主流計算工具進行求解與驗證。</p>
+                <p id="about-p2">在過往的項目中，我的核心優勢在於**完整的全流程建模能力**：從原始數據集的清洗與描述性統計，到多元統計檢驗、複雜系統的算法設計（如空間風險評估與路徑規劃演化），再到最終論文級別的圖表可視化呈現。</p>
+            </div>
+            <div>
+                <h3 style="font-size: 1rem; margin-bottom: 20px; color: var(--text-primary); font-family: monospace;" id="title-skills">核心技術棧 // Skills</h3>
+                <div class="skills-tags">
+                    <span class="tag">R (Tidyverse)</span>
+                    <span class="tag">Python</span>
+                    <span class="tag">GLM / Regression</span>
+                    <span class="tag">Quantitative Finance</span>
+                    <span class="tag">Heuristic Algorithms</span>
+                    <span class="tag">Spatio-temporal Simulation</span>
+                    <span class="tag">LaTeX & Visuals</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="section" style="border-top: 1px solid rgba(100, 255, 218, 0.05);">
+        <h2 class="section-title" id="title-projects">數學建模與量化成果</h2>
+        
+        <div class="project-list">
+            
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title" id="p1-title">複雜區域突發事件多響應員時空動態清查與風險評估模型</div>
+                    <span class="project-badge" id="p1-badge">時空網絡優化</span>
+                </div>
+                <div class="project-segment">
+                    <div class="segment-title" id="p1-bg-title">01 / 問題背景 Background</div>
+                    <div class="segment-content" id="p1-bg-content">在突發安全威脅、火災或燃氣泄漏等緊急事件中，如何針對不同建築類型（商場、醫院、學校等）進行高效的區域風險評估，並在有限響應人員與多重時間步約束下，設計最優的動態清查路徑與進度線？</div>
+                </div>
+                <div class="project-segment">
+                    <div class="segment-title" id="p1-model-title">02 / 核心建模與算法 Methods</div>
+                    <div class="segment-content" id="p1-model-content">構建了區域風險評估矩陣，對兒童區域、實驗室等高危或脆弱靶點劃分優先級別。引入多步演化機制，模擬不同步行速度、響應人員數量對整體清查時間效率的敏感性分析。通過離散時間步時空圖，實現了多響應員在多交通樹狀或網格空間內的聯合搜索調度模型。</div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title" id="p2-title">基於 UCI 數據集的青少年飲酒行為對數學學業成績影響的實證分析</div>
+                    <span class="project-badge" id="p2-badge">回歸與實證分析</span>
+                </div>
+                <div class="project-segment">
+                    <div class="segment-title" id="p2-bg-title">01 / 問題背景 Background</div>
+                    <div class="segment-content" id="p2-bg-content">利用 UCI Student Performance 真實學業數據集（382名學生），定量探究社會行為（飲酒頻率）對核心認知學科（數學）成績的衝擊，並剝離家庭背景、性別等混雜變量的影響。</div>
+                </div>
+                <div class="project-segment">
+                    <div class="segment-title" id="p2-model-title">02 / 核心建模與算法 Methods</div>
+                    <div class="segment-content" id="p2-model-content">利用 R 語言進行數據挖掘。建立了廣義線性模型 (GLM) 與多元線性回歸，控制了父母教育水平、性別等混雜特徵。運用擬合優度檢驗、殘差偏差與 AIC 指標（優選模型 AIC: 646.72）進行穩健性檢驗。證實了飲酒對男生成績的負面效應（降幅 1.51 分）略高於女生。</div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-header">
+                    <div class="project-title" id="p3-title">上市公司（阿里巴巴-SW 9988.HK）港股趨勢量化技術分析標準的構建</div>
+                    <span class="project-badge" id="p3-badge">量化金融建模</span>
+                </div>
+                <div class="project-segment">
+                    <div class="segment-title" id="p3-bg-title">01 / 問題背景 Background</div>
+                    <div class="segment-content" id="p3-bg-content">金融二級市場中存在大量的噪聲交易。如何基於過去 365 個交易日的歷史數據，剔除“假突破/假交叉”，制定一套高置信度的趨勢反轉識別數學標準？</div>
+                </div>
+                <div class="project-segment">
+                    <div class="segment-title" id="p3-model-title">02 / 核心建模與算法 Methods</div>
+                    <div class="segment-content" id="p3-model-content">基於簡單移動平均線（SMA）算法，定義了嚴格的 MA30 與 MA60 計算公式。構建了多維度交叉確認模型，設立了“真正死亡十字”判別標準（需同時滿足位置、連續3天確認、以及均線差值幅度條件）。同時建立數學過濾機制，對快速反轉、小幅波動及成交量背離等三種“假的死亡十字”進行了量化定義。</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <p id="footer-text">© 2026 Portfolio. Driven by Real-World Mathematical Modeling.</p>
+    </footer>
+
+    <script>
+        const i18n = {
+            zh: {
+                toggleBtn: "English",
+                navLogo: "PORTFOLIO >_",
+                navAbout: "關於我",
+                navProjects: "建模成果",
+                heroTitle: "用數理模型解構複雜世界",
+                heroDesc: "專注於統計實證分析、金融量化技術指標研究與時空網絡優化。堅持數據驅動，利用代碼與算法交付洞察。",
+                titleAbout: "關於我",
+                aboutP1: "你好！我是一名專注於數據科學與數學建模的實踐者。我擅長將現實世界中複雜、模糊的問題，通過嚴謹的數學語言進行抽象，並利用主流計算工具進行求解與驗證。",
+                aboutP2: "在過往的項目中，我的核心優勢在於**完整的全流程建模能力**：從原始數據集的清洗與描述性統計，到多元統計檢驗、複雜系統的算法設計（如空間風險評估與路徑規劃演化），再到最終論文級別的圖表可視化呈現。",
+                titleSkills: "核心技術棧 // Skills",
+                titleProjects: "數學建模與量化成果",
+                
+                p1Title: "複雜區域突發事件多響應員時空動態清查與風險評估模型",
+                p1Badge: "時空網絡優化",
+                p1BgTitle: "01 / 問題背景 Background",
+                p1BgContent: "在突發安全威脅、火災或燃氣泄漏等緊急事件中，如何針對不同建築類型（商場、醫院、學校等）進行高效的區域風險評估，並在有限響應人員與多重時間步约束下，設計最優的動態清查路徑與進度線？",
+                p1ModelTitle: "02 / 核心建模與算法 Methods",
+                p1ModelContent: "構建了區域風險評估矩陣，對兒童區域、實驗室等高危或脆弱靶點劃分優先級別。引入多步演化機制，模擬不同步行速度、響應人員數量對整體清查時間效率的敏感性分析。通過離散時間步時空圖，實現了多響應員在多交通樹狀或網格空間內的聯合搜索調度模型。",
+                
+                p2Title: "基於 UCI 數據集的青少年飲酒行為對數學學業成績影響的實證分析",
+                p2Badge: "回歸與實證分析",
+                p2BgTitle: "01 / 問題背景 Background",
+                p2BgContent: "利用 UCI Student Performance 真實學業數據集（382名學生），定量探究社會行為（飲酒頻率）對核心認知學科（數學）成績的衝擊，並剝離家庭背景、性別等混雜變量的影響。",
+                p2ModelTitle: "02 / 核心建模與算法 Methods",
+                p2ModelContent: "利用 R 語言進行數據挖掘。建立了廣義線性模型 (GLM) 與多元線性回歸，控制了父母教育水平、性別等混雜特徵。運用擬合優度檢驗、殘差偏差與 AIC 指標（優選模型 AIC: 646.72）進行穩健性檢驗。證實了飲酒對男生成績的負面效應（降幅 1.51 分）略高於女生。",
+                
+                p3Title: "上市公司（阿里巴巴-SW 9988.HK）港股趨勢量化技術分析標準的構建",
+                p3Badge: "量化金融建模",
+                p3BgTitle: "01 / 問題背景 Background",
+                p3BgContent: "金融二級市場中存在大量的噪聲交易。如何基於過去 365 個交易日的歷史數據，剔除“假突破/假交叉”，制定一套高置信度的趨勢反轉識別數學標準？",
+                p3ModelTitle: "02 / 核心建模與算法 Methods",
+                p3ModelContent: "基於簡單移動平均線（SMA）算法，定義了嚴格的 MA30 與 MA60 計算公式。構建了多維度交叉確認模型，設立了“真正死亡十字”判別標準（需同時滿足位置、連續3天確認、以及均線差值幅度條件）。同時建立數學過濾機制，對快速反轉、小幅波動及成交量背離等三種“假的死亡十字”進行了量化定義。",
+                
+                footerText: "© 2026 Portfolio. Driven by Real-World Mathematical Modeling."
+            },
+            en: {
+                toggleBtn: "中文",
+                navLogo: "PORTFOLIO >_",
+                navAbout: "About",
+                navProjects: "Projects",
+                heroTitle: "Deconstructing the World via Mathematical Models",
+                heroDesc: "Specializing in quantitative empirical analysis, financial technical indicators, and spatio-temporal network optimization. Dedicated to turning complex data into actionable analytical insights.",
+                titleAbout: "About Me",
+                aboutP1: "Hello! I am a passionate practitioner focusing on Data Science and Mathematical Modeling. I excel at translating complex, ambiguous real-world problems into rigorous mathematical frameworks and solving them with computational tools.",
+                aboutP2: "My core competitive advantage lies in end-to-end modeling proficiency: from raw dataset cleaning and descriptive statistics to multivariate statistical testing, algorithmic design for complex systems (such as spatial risk assessment and routing optimization), and high-quality data visualizations.",
+                titleSkills: "Core Tech Stack // Skills",
+                titleProjects: "Mathematical Modeling & Quantitative Projects",
+                
+                p1Title: "Spatio-Temporal Dynamic Search and Risk Assessment Model for Multi-Responder Emergency Response",
+                p1Badge: "Network Optimization",
+                p1BgTitle: "01 / Background",
+                p1BgContent: "During sudden security threats, fires, or gas leaks, how can we efficiently assess spatial risks across diverse building types (malls, hospitals, schools) and design optimized dynamic clearance paths for multiple responders under multi-step time constraints?",
+                p1ModelTitle: "02 / Methods & Algorithms",
+                p1ModelContent: "Developed a spatial risk assessment matrix prioritizing high-risk/vulnerable targets (e.g., child zones, laboratories). Implemented a multi-step evolutionary mechanism to conduct sensitivity analyses on walking speeds and responder counts. Utilized time-expanded graphs to achieve coordinated scheduling for multiple responders across tree and grid topologies.",
+                
+                p2Title: "Adolescent Alcohol Consumption & Mathematics Performance: An Empirical Study",
+                p2Badge: "Regression & Empirical Analysis",
+                p2BgTitle: "01 / Background",
+                p2BgContent: "Utilized the UCI Student Performance dataset (382 students) to quantitatively investigate the impact of social behaviors (drinking frequency) on core cognitive academic performance (Math), while isolating confounding variables like family background and gender.",
+                p2ModelTitle: "02 / Methods & Algorithms",
+                p2ModelContent: "Conducted deep data mining using R. Built Generalized Linear Models (GLM) and multivariate linear regressions to control for parental education, gender, and age. Performed robustness checks via goodness-of-fit tests and residual deviance evaluation (Optimized Model AIC: 646.72). Proved that the negative dosage effect of drinking on math scores is slightly higher for males (a decrease of 1.51 points) than females.",
+                
+                p3Title: "Quantitative Technical Analysis Framework for Alibaba Group (9988.HK) in the HK Stock Market",
+                p3Badge: "Quantitative Finance",
+                p3BgTitle: "01 / Background",
+                p3BgContent: "Secondary financial markets suffer from extensive noise trading. How can we formulate a high-confidence mathematical standard to eliminate 'false breakouts' and identify true trend reversals based on 365 trading days of historical data?",
+                p3ModelTitle: "02 / Methods & Algorithms",
+                p3ModelContent: "Defined strict MA30 and MA60 mathematical formulations based on Simple Moving Average (SMA) algorithms. Constructed a multi-dimensional cross-verification model establishing criteria for a 'True Death Cross' (requiring strict positional, 3-day continuation, and premium amplitude thresholds). Developed statistical filters to mathematically define and exclude three types of 'False Death Crosses' (Quick-Reversal, Micro-Fluctuation, and Volume-Divergence).",
+                
+                footerText: "© 2026 Portfolio. Driven by Real-World Mathematical Modeling."
+            }
+        };
+
+        let currentLang = 'zh';
+
+        function updateDOM() {
+            const data = i18n[currentLang];
+            
+            document.getElementById('lang-toggle').innerText = data.toggleBtn;
+            document.getElementById('nav-logo').innerText = data.navLogo;
+            document.getElementById('nav-about').innerText = data.navAbout;
+            document.getElementById('nav-projects').innerText = data.navProjects;
+            
+            document.getElementById('hero-title').innerText = data.heroTitle;
+            document.getElementById('hero-desc').innerText = data.heroDesc;
+            
+            document.getElementById('title-about').innerText = data.titleAbout;
+            document.getElementById('about-p1').innerText = data.aboutP1;
+            document.getElementById('about-p2').innerText = data.aboutP2;
+            document.getElementById('title-skills').innerText = data.titleSkills;
+            document.getElementById('title-projects').innerText = data.titleProjects;
+            
+            // P1
+            document.getElementById('p1-title').innerText = data.p1Title;
+            document.getElementById('p1-badge').innerText = data.p1Badge;
+            document.getElementById('p1-bg-title').innerText = data.p1BgTitle;
+            document.getElementById('p1-bg-content').innerText = data.p1BgContent;
+            document.getElementById('p1-model-title').innerText = data.p1ModelTitle;
+            document.getElementById('p1-model-content').innerText = data.p1ModelContent;
+            
+            // P2
+            document.getElementById('p2-title').innerText = data.p2Title;
+            document.getElementById('p2-badge').innerText = data.p2Badge;
+            document.getElementById('p2-bg-title').innerText = data.p2BgTitle;
+            document.getElementById('p2-bg-content').innerText = data.p2BgContent;
+            document.getElementById('p2-model-title').innerText = data.p2ModelTitle;
+            document.getElementById('p2-model-content').innerText = data.p2ModelContent;
+            
+            // P3
+            document.getElementById('p3-title').innerText = data.p3Title;
+            document.getElementById('p3-badge').innerText = data.p3Badge;
+            document.getElementById('p3-bg-title').innerText = data.p3BgTitle;
+            document.getElementById('p3-bg-content').innerText = data.p3BgContent;
+            document.getElementById('p3-model-title').innerText = data.p3ModelTitle;
+            document.getElementById('p3-model-content').innerText = data.p3ModelContent;
+            
+            document.getElementById('footer-text').innerText = data.footerText;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            updateDOM();
+        }
+
+        // 平滑滾動
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
